@@ -40,4 +40,4 @@ In a production environment, you would want to integrate with the Google Docs AP
 
 ## License
 
-MIT 
+MIT
