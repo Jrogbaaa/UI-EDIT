@@ -15,26 +15,8 @@ document.addEventListener('DOMContentLoaded', () => {
         lastUpdatedElement.textContent = `Last updated: ${formattedDate}`;
         contentElement.appendChild(lastUpdatedElement);
         
-        // Add title
-        const titleElement = document.createElement('h2');
-        titleElement.className = 'doc-title';
-        titleElement.textContent = data.title;
-        contentElement.appendChild(titleElement);
-        
-        // Add document link if available
-        if (data.documentUrl) {
-            const docLinkContainer = document.createElement('div');
-            docLinkContainer.className = 'doc-link-container';
-            
-            const docLink = document.createElement('a');
-            docLink.href = data.documentUrl;
-            docLink.target = '_blank';
-            docLink.className = 'doc-link';
-            docLink.textContent = 'View Original Document';
-            
-            docLinkContainer.appendChild(docLink);
-            contentElement.appendChild(docLinkContainer);
-        }
+        // We're not adding the title or document link here anymore 
+        // as they're redundant with the header
         
         // Add sections as collapsible elements
         data.sections.forEach((section, index) => {
@@ -112,8 +94,8 @@ document.addEventListener('DOMContentLoaded', () => {
             contentContainer.appendChild(paragraphElement);
             sectionDiv.appendChild(contentContainer);
             
-            // Set up toggle functionality
-            toggleButton.addEventListener('click', () => {
+            // Set up toggle functionality for clicking the entire header
+            sectionHeader.addEventListener('click', () => {
                 const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
                 toggleButton.setAttribute('aria-expanded', !isExpanded);
                 contentContainer.style.display = isExpanded ? 'none' : 'block';
