@@ -74,6 +74,53 @@ main {
     margin-bottom: 8px;
 }
 
+.section-content li.nested {
+    list-style-type: circle;
+    margin-left: 20px;
+}
+
+/* Q&A styling */
+.qa-item {
+    display: flex;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.qa-number {
+    background-color: #4285f4;
+    color: white;
+    font-weight: bold;
+    padding: 10px 15px;
+    min-width: 40px;
+    text-align: center;
+    font-size: 1.2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.qa-content {
+    padding: 15px;
+    flex-grow: 1;
+}
+
+.question {
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #2c3e50;
+}
+
+.answer {
+    color: #444;
+}
+
+strong {
+    font-weight: 600;
+    color: #2c3e50;
+}
+
 .doc-title {
     font-size: 2.2rem;
     color: #1a365d;

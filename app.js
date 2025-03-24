@@ -47,27 +47,47 @@ document.addEventListener('DOMContentLoaded', () => {
             const paragraphElement = document.createElement('div');
             paragraphElement.className = 'section-content';
             
-            // Process content - handle bullet points and numbered lists
+            // Process content - handle bullet points, numbered lists, and formatting
             let processedContent = section.content;
             
-            // Convert bullet points to HTML
-            processedContent = processedContent.replace(/•\s(.*?)(?=\n|$)/g, '<li>$1</li>');
-            if (processedContent.includes('<li>')) {
-                processedContent = `<ul>${processedContent}</ul>`;
+            // Handle empty content
+            if (!processedContent) {
+                processedContent = '';
             }
             
-            // Convert numbered lists to HTML
-            processedContent = processedContent.replace(/(\d+)\.\s(.*?)(?=\n|$)/g, '<li>$2</li>');
-            if (processedContent.includes('<li>') && !processedContent.includes('<ul>')) {
-                processedContent = `<ol>${processedContent}</ol>`;
+            // Handle bold text (text between ** **)
+            processedContent = processedContent.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Format Q&A content with better styling
+            if (section.heading.includes('Q&A')) {
+                // Process Q&A format with special styling
+                processedContent = processedContent.replace(/(\d+)\.\s+Q:\s+(.*?)\n\s+A:\s+(.*?)(?=\n\n\d+\.|\n\n|$)/gs, 
+                    '<div class="qa-item"><div class="qa-number">$1</div><div class="qa-content"><div class="question">Q: $2</div><div class="answer">A: $3</div></div></div>');
+            } else {
+                // Convert bullet points to HTML
+                processedContent = processedContent.replace(/(?:^|\n)-\s+(.*?)(?=\n|$)/g, '<li>$1</li>');
+                if (processedContent.includes('<li>')) {
+                    processedContent = `<ul>${processedContent}</ul>`;
+                }
+                
+                // Convert numbered lists to HTML (but not in Q&A section)
+                processedContent = processedContent.replace(/(?:^|\n)(\d+)\.\s+(.*?)(?=\n|$)/g, '<li>$2</li>');
+                if (processedContent.includes('<li>') && !processedContent.includes('<ul>')) {
+                    processedContent = `<ol>${processedContent}</ol>`;
+                }
             }
             
-            // Replace remaining newlines with <br>
-            processedContent = processedContent.replace(/\n\n/g, '</p><p>');
+            // Handle nested bullet points
+            processedContent = processedContent.replace(/(?:^|\n)\s\s-\s+(.*?)(?=\n|$)/g, '<li class="nested">$1</li>');
+            
+            // Replace multiple newlines with paragraph breaks
+            processedContent = processedContent.replace(/\n\n+/g, '</p><p>');
+            
+            // Replace remaining single newlines with <br>
             processedContent = processedContent.replace(/\n/g, '<br>');
             
             // If no paragraphs yet, wrap in paragraph tags
-            if (!processedContent.includes('<p>')) {
+            if (!processedContent.includes('<p>') && !processedContent.includes('<div class="qa-item">')) {
                 processedContent = `<p>${processedContent}</p>`;
             }
             
