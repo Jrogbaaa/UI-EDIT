@@ -15,11 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
         lastUpdatedElement.textContent = `Last updated: ${formattedDate}`;
         contentElement.appendChild(lastUpdatedElement);
         
-        // We're not adding the title or document link here anymore 
-        // as they're redundant with the header
-        
         // Add sections as collapsible elements
         data.sections.forEach((section, index) => {
+            // Skip empty sections
+            if (!section.heading.trim()) return;
+            
             const sectionDiv = document.createElement('div');
             sectionDiv.className = 'content-section';
             
@@ -27,8 +27,18 @@ document.addEventListener('DOMContentLoaded', () => {
             const sectionHeader = document.createElement('div');
             sectionHeader.className = 'section-header';
             
+            // Add icon based on section type
+            let iconClass = 'chart-pie';
+            if (section.heading.includes('Q&A')) {
+                iconClass = 'question-circle';
+            } else if (section.heading.includes('Outreach')) {
+                iconClass = 'paper-plane';
+            } else if (section.heading.includes('Audience')) {
+                iconClass = 'users';
+            }
+            
             const headingElement = document.createElement('h3');
-            headingElement.textContent = section.heading;
+            headingElement.innerHTML = `<i class="fas fa-${iconClass}"></i> ${section.heading}`;
             
             const toggleButton = document.createElement('button');
             toggleButton.className = 'toggle-button';
@@ -95,16 +105,22 @@ document.addEventListener('DOMContentLoaded', () => {
             sectionDiv.appendChild(contentContainer);
             
             // Set up toggle functionality for clicking the entire header
-            sectionHeader.addEventListener('click', () => {
+            sectionHeader.addEventListener('click', (e) => {
                 const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
                 toggleButton.setAttribute('aria-expanded', !isExpanded);
-                contentContainer.style.display = isExpanded ? 'none' : 'block';
+                contentContainer.style.maxHeight = isExpanded ? '0' : `${contentContainer.scrollHeight}px`;
                 toggleButton.querySelector('.icon').textContent = isExpanded ? '+' : '−';
+                
+                if (isExpanded) {
+                    contentContainer.classList.remove('expanded');
+                } else {
+                    contentContainer.classList.add('expanded');
+                }
             });
             
             // Set initial state (all collapsed by default)
             toggleButton.setAttribute('aria-expanded', 'false');
-            contentContainer.style.display = 'none';
+            contentContainer.style.maxHeight = '0';
             
             contentElement.appendChild(sectionDiv);
         });
