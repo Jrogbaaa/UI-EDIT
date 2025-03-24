@@ -36,13 +36,30 @@ document.addEventListener('DOMContentLoaded', () => {
             contentElement.appendChild(docLinkContainer);
         }
         
-        // Add sections
-        data.sections.forEach(section => {
+        // Add sections as collapsible elements
+        data.sections.forEach((section, index) => {
             const sectionDiv = document.createElement('div');
             sectionDiv.className = 'content-section';
             
+            // Create header with toggle button
+            const sectionHeader = document.createElement('div');
+            sectionHeader.className = 'section-header';
+            
             const headingElement = document.createElement('h3');
             headingElement.textContent = section.heading;
+            
+            const toggleButton = document.createElement('button');
+            toggleButton.className = 'toggle-button';
+            toggleButton.innerHTML = '<span class="icon">+</span>';
+            toggleButton.setAttribute('aria-label', 'Toggle section');
+            
+            sectionHeader.appendChild(headingElement);
+            sectionHeader.appendChild(toggleButton);
+            sectionDiv.appendChild(sectionHeader);
+            
+            // Create collapsible content container
+            const contentContainer = document.createElement('div');
+            contentContainer.className = 'collapsible-content';
             
             const paragraphElement = document.createElement('div');
             paragraphElement.className = 'section-content';
@@ -92,9 +109,20 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             
             paragraphElement.innerHTML = processedContent;
+            contentContainer.appendChild(paragraphElement);
+            sectionDiv.appendChild(contentContainer);
             
-            sectionDiv.appendChild(headingElement);
-            sectionDiv.appendChild(paragraphElement);
+            // Set up toggle functionality
+            toggleButton.addEventListener('click', () => {
+                const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
+                toggleButton.setAttribute('aria-expanded', !isExpanded);
+                contentContainer.style.display = isExpanded ? 'none' : 'block';
+                toggleButton.querySelector('.icon').textContent = isExpanded ? '+' : '−';
+            });
+            
+            // Set initial state (all collapsed by default)
+            toggleButton.setAttribute('aria-expanded', 'false');
+            contentContainer.style.display = 'none';
             
             contentElement.appendChild(sectionDiv);
         });
