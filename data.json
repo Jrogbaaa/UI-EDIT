@@ -1,18 +1,23 @@
 {
-  "lastUpdated": "2023-03-23T12:00:00Z",
-  "title": "Marketing Workflow Results",
+  "lastUpdated": "2023-03-23T18:55:00Z",
+  "title": "FINAL RESULT",
+  "documentUrl": "https://docs.google.com/document/d/1-ZiVhpPIx5Rd51XEl5oImw17mSMSW3ejYPQqYYglYmg/edit",
   "sections": [
     {
-      "heading": "Campaign Overview",
-      "content": "This is a placeholder. Your Make workflow will update this with real content."
+      "heading": "Marketing Workflow Results",
+      "content": "This document contains the final results of our marketing workflow process. The content is designed to be easily readable and accessible to all team members."
     },
     {
-      "heading": "Key Metrics",
-      "content": "• Placeholder metrics\n• Will be replaced by your workflow"
+      "heading": "Key Findings",
+      "content": "• The campaign reached 125,000 unique visitors\n• Conversion rate increased by 15% month-over-month\n• Top performing channel: Social media (42% of conversions)\n• Customer acquisition cost decreased by 8%\n• Brand awareness metrics showed 22% improvement"
     },
     {
-      "heading": "Insights",
-      "content": "Placeholder insights that will be updated by your workflow."
+      "heading": "Recommendations",
+      "content": "Based on our analysis, we recommend focusing on the following areas:\n\n• Increase budget allocation to social media channels\n• Refine targeting parameters for display advertising\n• Create more video content for Instagram and TikTok\n• Develop a customer retention email sequence\n• Implement A/B testing on landing pages"
+    },
+    {
+      "heading": "Next Steps",
+      "content": "1. Review findings with marketing team\n2. Create implementation plan for recommendations\n3. Set up measurement framework for next quarter\n4. Schedule follow-up meeting with stakeholders\n5. Begin planning for Q2 campaign strategy"
     }
   ]
 } 
