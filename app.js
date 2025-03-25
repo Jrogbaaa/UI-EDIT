@@ -1,130 +1,120 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // Sample marketing content - in a real app, this would be loaded from Google Docs API
-    const marketingContent = {
-        title: "Q4 Marketing Campaign Results",
-        lastUpdated: new Date().toISOString(), // Add last updated date
-        sections: [
-            {
-                heading: "Campaign Overview",
-                content: "Our Q4 marketing campaign focused on increasing brand awareness and driving conversions through targeted social media advertising and content marketing. The campaign ran from October 1 to December 31."
-            },
-            {
-                heading: "Key Metrics",
-                content: "• 250,000 impressions\n• 15,000 website visits\n• 2,500 conversions\n• 16.7% conversion rate\n• 25% increase in social media engagement"
-            },
-            {
-                heading: "Audience Insights",
-                content: "The campaign resonated particularly well with our core demographic of professionals aged 25-45. The highest engagement rates came from LinkedIn and Instagram, while Facebook provided the most cost-effective conversions."
-            },
-            {
-                heading: "Recommendations",
-                content: "Based on our analysis, we recommend increasing our budget allocation for LinkedIn advertising by 20% and developing more video content for Instagram. We should also refine our messaging to emphasize value proposition and ROI, which resonated strongly with our audience."
-            }
-        ]
-    };
+// DOM Elements
+const docsContainer = document.getElementById('docs-container');
 
-    // Function to display content
-    function displayContent(data) {
-        const contentElement = document.getElementById('content');
-        
-        // Clear loading message
-        contentElement.innerHTML = '';
-        
-        // Add last updated info
-        const lastUpdatedElement = document.createElement('div');
-        lastUpdatedElement.className = 'last-updated';
-        const formattedDate = new Date(data.lastUpdated).toLocaleString();
-        lastUpdatedElement.textContent = `Last updated: ${formattedDate}`;
-        contentElement.appendChild(lastUpdatedElement);
-        
-        // Add title
-        const titleElement = document.createElement('h2');
-        titleElement.textContent = data.title;
-        titleElement.className = 'doc-title';
-        contentElement.appendChild(titleElement);
-        
-        // Add sections as collapsible elements
-        data.sections.forEach(section => {
-            const sectionDiv = document.createElement('div');
-            sectionDiv.className = 'content-section';
-            
-            // Create header with toggle button
-            const sectionHeader = document.createElement('div');
-            sectionHeader.className = 'section-header';
-            
-            // Add icon based on section type
-            let iconClass = 'chart-pie';
-            if (section.heading.includes('Key Metrics')) {
-                iconClass = 'chart-bar';
-            } else if (section.heading.includes('Audience')) {
-                iconClass = 'users';
-            } else if (section.heading.includes('Recommend')) {
-                iconClass = 'lightbulb';
-            }
-            
-            const headingElement = document.createElement('h3');
-            headingElement.innerHTML = `<i class="fas fa-${iconClass}"></i> ${section.heading}`;
-            
-            const toggleButton = document.createElement('button');
-            toggleButton.className = 'toggle-button';
-            toggleButton.innerHTML = '<span class="icon">+</span>';
-            toggleButton.setAttribute('aria-label', 'Toggle section');
-            
-            sectionHeader.appendChild(headingElement);
-            sectionHeader.appendChild(toggleButton);
-            sectionDiv.appendChild(sectionHeader);
-            
-            // Create collapsible content
-            const contentContainer = document.createElement('div');
-            contentContainer.className = 'collapsible-content';
-            
-            const paragraphElement = document.createElement('div');
-            paragraphElement.className = 'section-content';
-            
-            // Format content - convert bullet points to HTML list
-            let processedContent = section.content;
-            
-            // Convert bullet points to HTML
-            processedContent = processedContent.replace(/•\s+(.*?)(?=\n|$)/g, '<li>$1</li>');
-            if (processedContent.includes('<li>')) {
-                processedContent = `<ul>${processedContent}</ul>`;
-            } else {
-                processedContent = `<p>${processedContent}</p>`;
-            }
-            
-            paragraphElement.innerHTML = processedContent;
-            contentContainer.appendChild(paragraphElement);
-            sectionDiv.appendChild(contentContainer);
-            
-            // Set up toggle functionality
-            sectionHeader.addEventListener('click', () => {
-                const isExpanded = toggleButton.getAttribute('aria-expanded') === 'true';
-                toggleButton.setAttribute('aria-expanded', !isExpanded);
-                contentContainer.style.maxHeight = isExpanded ? '0' : `${contentContainer.scrollHeight}px`;
-                toggleButton.querySelector('.icon').textContent = isExpanded ? '+' : '−';
-                
-                if (isExpanded) {
-                    contentContainer.classList.remove('expanded');
-                } else {
-                    contentContainer.classList.add('expanded');
-                }
-            });
-            
-            // Set initial state
-            toggleButton.setAttribute('aria-expanded', 'false');
-            contentContainer.style.maxHeight = '0';
-            
-            contentElement.appendChild(sectionDiv);
-        });
-    }
+// Store for our documents
+let documents = [];
 
-    // In a production app, you would fetch the data from Google Docs API
-    // For this demo, we'll use the sample data with a short delay
-    const loadingElement = document.querySelector('.loading');
-    loadingElement.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Loading your marketing data...';
+// Function to create the HTML for a document card
+function createDocumentCard(doc) {
+  return `
+    <div class="doc-card">
+      <div class="doc-title">
+        ${doc.url 
+          ? `<a href="${doc.url}" target="_blank" rel="noopener noreferrer" tabindex="0">${doc.title}</a>` 
+          : doc.title}
+      </div>
+      <div class="doc-meta">
+        ${doc.author ? `
+          <div class="doc-author">
+            <svg viewBox="0 0 20 20" fill="currentColor">
+              <path d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" />
+            </svg>
+            ${doc.author}
+          </div>
+        ` : ''}
+        <div class="doc-date">
+          ${new Date(doc.created_at).toLocaleDateString()}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// Function to render empty state
+function renderEmptyState() {
+  return `
+    <div class="empty-state">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+      </svg>
+      <h3>No documents yet</h3>
+      <p>Documents will appear here when they're created via Make.com.</p>
+    </div>
+  `;
+}
+
+// Function to render an error message
+function renderError(message) {
+  return `
+    <div class="error-card">
+      <h3>Error loading documents</h3>
+      <p>${message}</p>
+    </div>
+  `;
+}
+
+// Function to render the documents
+function renderDocuments() {
+  if (documents.length === 0) {
+    docsContainer.innerHTML = renderEmptyState();
+    return;
+  }
+
+  const docCards = documents.map(doc => createDocumentCard(doc)).join('');
+  docsContainer.innerHTML = docCards;
+}
+
+// Function to fetch documents data
+async function fetchDocuments() {
+  try {
+    console.log('Fetching documents...');
     
+    // We'll use a data.json file that will be updated by Make.com
+    const response = await fetch('data.json?' + new Date().getTime());
+    
+    if (!response.ok) {
+      throw new Error(`Failed to fetch documents (${response.status})`);
+    }
+    
+    const data = await response.json();
+    documents = Array.isArray(data) ? data : [];
+    
+    console.log(`Loaded ${documents.length} documents`);
+    renderDocuments();
+  } catch (error) {
+    console.error('Error fetching documents:', error);
+    docsContainer.innerHTML = renderError(error.message);
+    
+    // Add some sample data for testing
+    documents = [
+      {
+        id: "sample-1",
+        title: "Sample Document 1",
+        url: "https://example.com/doc1",
+        author: "John Doe",
+        created_at: new Date().toISOString()
+      },
+      {
+        id: "sample-2",
+        title: "Sample Document 2", 
+        url: "https://example.com/doc2",
+        author: "Jane Smith",
+        created_at: new Date(Date.now() - 86400000).toISOString()
+      }
+    ];
+    
+    // Render the sample documents after a short delay
     setTimeout(() => {
-        displayContent(marketingContent);
-        loadingElement.style.display = 'none';
-    }, 1000); // Simulate loading delay
-}); 
+      renderDocuments();
+    }, 2000);
+  }
+}
+
+// Initial load
+document.addEventListener('DOMContentLoaded', () => {
+  // Fetch documents initially
+  fetchDocuments();
+  
+  // Set up polling for updates every 30 seconds
+  setInterval(fetchDocuments, 30000);
+});
