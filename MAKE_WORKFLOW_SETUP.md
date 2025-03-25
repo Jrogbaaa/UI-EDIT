@@ -1,87 +1,63 @@
-# Setting Up Your Make Workflow
+# Make.com Workflow Setup
 
-This guide explains how to set up a Make (formerly Integromat) workflow to update your marketing results website.
+This guide explains how to set up your Make.com workflow to update the Google Docs live feed.
 
 ## Overview
 
-Each time your Make workflow runs, it will update the `data.json` file in your GitHub repository with the latest marketing results. The web app will then display this updated data automatically.
+Since GitHub Pages only supports static files and doesn't allow server-side code execution, we'll use GitHub Gists as our "database" to store document information. Make.com will update a Gist whenever a new Google Doc is created.
 
-## Prerequisites
+## Steps to Set Up Make.com Workflow
 
-1. A Make.com account
-2. A GitHub personal access token with repo permissions
+### 1. Create a GitHub Gist
 
-## Setting Up the Make Workflow
+1. Go to [https://gist.github.com/](https://gist.github.com/)
+2. Create a new Gist with these settings:
+   - Filename: `documents.json`
+   - Content: `[]` (just an empty array to start)
+   - Description: "Google Docs data for live feed"
+   - Visibility: Public (so your website can access it without authentication)
+3. Click "Create public gist"
+4. **Important:** Copy the Gist ID from the URL - it's the alphanumeric string after your username, like: `https://gist.github.com/username/THIS_IS_YOUR_GIST_ID`
 
-### 1. Create a New Scenario
+### 2. Update your app.js file
 
-1. In Make, create a new scenario
-2. Start with your trigger (whatever starts your marketing workflow)
+Replace `YOUR_GIST_ID_HERE` in the app.js file with your actual Gist ID.
 
-### 2. Add a GitHub Module
+### 3. Set Up Make.com Workflow
 
-1. Add a "GitHub" module
-2. Choose "Update a File" as the action
-3. Connect your GitHub account (you'll need your personal access token)
-4. Configure as follows:
-   - Repository Owner: `Jrogbaaa`
-   - Repository Name: `UI-EDIT`
-   - Branch: `main`
-   - Path: `data.json`
-   - Commit Message: "Update marketing results from Make workflow"
-   - Content: Use the JSON template below, replacing values with your data
+1. Create a new scenario in Make.com
+2. Add a Google Docs trigger (like "Watch Documents")
+3. Add a GitHub module - **GitHub > Update a Gist**
+4. Configure the module with these settings:
+   ```
+   Gist ID: YOUR_GIST_ID
+   File Name: documents.json
+   File Content: [
+     {
+       "id": "{{formatDate(now; X)}}-{{random(1000; 9999)}}",
+       "title": "{{googleDocs.title}}",
+       "url": "{{googleDocs.url}}",
+       "author": "{{googleDocs.owner.displayName}}",
+       "created_at": "{{formatDate(now; YYYY-MM-DD'T'HH:mm:ss'Z')}}"
+     }
+     // If you want to keep existing documents, add this:
+     // , {{substring(previousGistContent; 1; length(previousGistContent) - 2)}}
+   ]
+   ```
 
-### 3. JSON Structure
+5. Save and activate your workflow
 
-Your JSON data should follow this structure:
+## Testing
 
-```json
-{
-  "lastUpdated": "{{formatDate(now; YYYY-MM-DDTHH:mm:ss)}}Z",
-  "title": "Marketing Workflow Results",
-  "sections": [
-    {
-      "heading": "Campaign Overview",
-      "content": "Your campaign overview text here"
-    },
-    {
-      "heading": "Key Metrics",
-      "content": "• Metric 1: {{value1}}\n• Metric 2: {{value2}}\n• Metric 3: {{value3}}"
-    },
-    {
-      "heading": "Insights",
-      "content": "Your insights text here"
-    }
-  ]
-}
-```
-
-### 4. Getting the File SHA
-
-The first time you update the file, you'll need the file's SHA. To get it:
-
-1. In the GitHub module, enable "Advanced Settings"
-2. Add a new field "SHA of file being replaced"
-3. To get the current SHA, add a GitHub module before this one:
-   - Choose "Get File Content" as the action
-   - Configure it with the same repository details
-   - Path: `data.json`
-4. Map the SHA from the "Get File Content" module to your "Update File" module
-
-### 5. Testing
-
-1. Run your scenario manually to test
-2. Check your website at https://jrogbaaa.github.io/UI-EDIT/ to see the updates
-
-## Example Make Workflow
-
-1. Trigger (e.g., Google Sheet update, form submission, etc.)
-2. Format your marketing data into the required JSON structure
-3. Get the current file's SHA from GitHub
-4. Update the file in GitHub with your new JSON data
+1. Create a new Google Doc that matches your trigger criteria
+2. Your Make.com workflow should trigger and update the Gist
+3. Visit [https://jrogbaaa.github.io/UI-EDIT/](https://jrogbaaa.github.io/UI-EDIT/) to see the new document appear (it may take up to 30 seconds for the site to refresh)
 
 ## Troubleshooting
 
-- If you get authentication errors, check your GitHub token
-- If you get file not found errors, verify the repository and file path
-- If the website doesn't update, check that your JSON matches the expected format 
+If documents aren't appearing:
+
+1. Check the Make.com execution history to confirm the workflow ran successfully
+2. Check your Gist to confirm the data was updated correctly
+3. Open the browser console on your website to look for any errors
+4. Make sure the Gist ID in app.js matches your actual Gist ID
