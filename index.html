@@ -1,32 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Marketing Workflow Results</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Google Docs Live Updates</title>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1><i class="fas fa-chart-line"></i> Marketing Workflow Results</h1>
-            <p class="subtitle">Campaign performance insights and recommendations</p>
-        </header>
-        <main id="content">
-            <!-- Content will be loaded here -->
-            <div class="loading">
-                <i class="fas fa-spinner fa-spin"></i> Loading content...
-            </div>
-        </main>
-        <footer>
-            <p>&copy; 2023 Marketing Workflow App</p>
-            <p class="footer-note">Click on each section to expand and view detailed information</p>
-        </footer>
-    </div>
-    <script src="app.js"></script>
+  <div class="container">
+    <header>
+      <h1>Google Docs Live Updates</h1>
+      <p>Recent documents from your workflow</p>
+    </header>
+
+    <main id="docs-container">
+      <div class="loading">
+        <div class="spinner"></div>
+        <p>Loading documents...</p>
+      </div>
+    </main>
+
+    <footer>
+      <p>Updated automatically from Make.com workflow</p>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
 </body>
-</html> 
+</html>
