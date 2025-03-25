@@ -4,6 +4,9 @@ const docsContainer = document.getElementById('docs-container');
 // Store for our documents
 let documents = [];
 
+// Update this with your Gist ID after creating it
+const GIST_ID = "YOUR_GIST_ID_HERE";
+
 // Function to create the HTML for a document card
 function createDocumentCard(doc) {
   return `
@@ -64,22 +67,50 @@ function renderDocuments() {
   docsContainer.innerHTML = docCards;
 }
 
-// Function to fetch documents data
+// Function to fetch documents from GitHub Gist
 async function fetchDocuments() {
   try {
-    console.log('Fetching documents...');
+    console.log('Fetching documents from Gist...');
     
-    // We'll use a data.json file that will be updated by Make.com
-    const response = await fetch('data.json?' + new Date().getTime());
+    if (!GIST_ID || GIST_ID === "YOUR_GIST_ID_HERE") {
+      // Use local sample data for testing
+      documents = [
+        {
+          id: "sample-1",
+          title: "Sample Document 1",
+          url: "https://example.com/doc1",
+          author: "John Doe",
+          created_at: new Date().toISOString()
+        },
+        {
+          id: "sample-2",
+          title: "Sample Document 2", 
+          url: "https://example.com/doc2",
+          author: "Jane Smith",
+          created_at: new Date(Date.now() - 86400000).toISOString()
+        }
+      ];
+      renderDocuments();
+      return;
+    }
+    
+    // Fetch from GitHub Gist
+    const response = await fetch(`https://api.github.com/gists/${GIST_ID}?` + new Date().getTime());
     
     if (!response.ok) {
       throw new Error(`Failed to fetch documents (${response.status})`);
     }
     
-    const data = await response.json();
-    documents = Array.isArray(data) ? data : [];
+    const gist = await response.json();
     
-    console.log(`Loaded ${documents.length} documents`);
+    // Get file content from the first file in the gist
+    const fileKey = Object.keys(gist.files)[0];
+    const fileContent = gist.files[fileKey].content;
+    
+    // Parse the JSON content
+    documents = JSON.parse(fileContent);
+    
+    console.log(`Loaded ${documents.length} documents from Gist`);
     renderDocuments();
   } catch (error) {
     console.error('Error fetching documents:', error);
